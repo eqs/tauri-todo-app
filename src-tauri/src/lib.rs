@@ -33,11 +33,29 @@ fn handle_get_todolist() -> Result<TodoList, String> {
     Ok(todolist)
 }
 
+#[tauri::command]
+fn handle_add_todo(todo: Todo) -> Result<(), String> {
+    println!("handle_add_todo ---------------");
+    dbg!(&todo);
+    Ok(())
+}
+
+#[tauri::command]
+fn handle_remove_todo(id: i64) -> Result<(), String> {
+    println!("handle_remove_todo ---------------");
+    dbg!(id);
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![handle_get_todolist])
+        .invoke_handler(tauri::generate_handler![
+            handle_get_todolist,
+            handle_add_todo,
+            handle_remove_todo,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

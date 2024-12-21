@@ -8,24 +8,25 @@ import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
-import { invoke } from "@tauri-apps/api/core";
+import DeleteIcon from '@mui/icons-material/Delete';
 import "./App.css";
 
-interface Todo {
-  id: number;
-  description: string;
-  completed: boolean;
-}
+import {
+  Todo,
+} from "./types";
+import {
+  handleGetTodoList,
+  handleRemoveTodo,
+} from "./api";
 
-function TodoList() {
+function TodoListComponent() {
   const [todos, setTodos] = useState<Todo[]>([]);
 
   useEffect(() => {
-    async function fetchData() {
-      let todoList: any = await invoke("handle_get_todolist");
-      setTodos(todoList.todos);
-    }
-    fetchData();
+    handleGetTodoList()
+      .then((todoList) => {
+        setTodos(todoList.todos);
+      });
   }, []);
 
   return (
@@ -33,19 +34,27 @@ function TodoList() {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>ID</TableCell>
+            <TableCell style={{ width: 16 }}>ID</TableCell>
             <TableCell>Description</TableCell>
-            <TableCell>Completed</TableCell>
+            <TableCell style={{ width: 16 }}>Completed</TableCell>
+            <TableCell style={{ width: 16 }}></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {todos.map((todo: Todo) => {
+            const onDeleteClicked = () => {
+              handleRemoveTodo(todo.id);
+            };
+
             return (
-              <TableRow>
+              <TableRow key={todo.id}>
                 <TableCell>{todo.id}</TableCell>
                 <TableCell>{todo.description}</TableCell>
                 <TableCell>
                   <Checkbox checked={todo.completed} />
+                </TableCell>
+                <TableCell>
+                  <Button onClick={onDeleteClicked}><DeleteIcon /></Button>
                 </TableCell>
               </TableRow>
             );
@@ -60,7 +69,7 @@ function App() {
   return (
     <main className="container">
       <h1>It works!</h1>
-      <TodoList />
+      <TodoListComponent />
       <Button>+</Button>
     </main>
   );

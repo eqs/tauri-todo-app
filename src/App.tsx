@@ -1,5 +1,14 @@
-import { useState } from "react";
-// import { invoke } from "@tauri-apps/api/core";
+import { useState, useEffect } from "react";
+import Paper from "@mui/material/Paper";
+import TableContainer from "@mui/material/TableContainer";
+import Table from "@mui/material/Table";
+import TableHead from "@mui/material/TableHead";
+import TableBody from "@mui/material/TableBody";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
+import Checkbox from "@mui/material/Checkbox";
+import Button from "@mui/material/Button";
+import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
 
 interface Todo {
@@ -8,42 +17,51 @@ interface Todo {
   completed: boolean;
 }
 
-const defaultTodos: Todo[] = [
-  {
-    id: 0,
-    description: "買い物",
-    completed: false,
-  },
-  {
-    id: 1,
-    description: "勉強",
-    completed: true,
-  },
-  {
-    id: 2,
-    description: "睡眠",
-    completed: true,
-  },
-  {
-    id: 3,
-    description: "ゲーム",
-    completed: false,
-  },
-];
+function TodoList() {
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      let todoList: any = await invoke("handle_get_todolist");
+      setTodos(todoList.todos);
+    }
+    fetchData();
+  }, []);
+
+  return (
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>ID</TableCell>
+            <TableCell>Description</TableCell>
+            <TableCell>Completed</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {todos.map((todo: Todo) => {
+            return (
+              <TableRow>
+                <TableCell>{todo.id}</TableCell>
+                <TableCell>{todo.description}</TableCell>
+                <TableCell>
+                  <Checkbox checked={todo.completed} />
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}
 
 function App() {
-  const [todos, setTodos] = useState<Todo[]>(defaultTodos);
-
   return (
     <main className="container">
       <h1>It works!</h1>
-      {todos.map((todo, k) => {
-        return (
-          <div className="row">
-            {todo.id}: {todo.description}, {todo.completed ? "done" : "in progress"}
-          </div>
-        );
-      })}
+      <TodoList />
+      <Button>+</Button>
     </main>
   );
 }

@@ -16,6 +16,7 @@ import {
 } from "./types";
 import {
   handleGetTodoList,
+  handleAddTodo,
   handleRemoveTodo,
 } from "./api";
 
@@ -29,39 +30,50 @@ function TodoListComponent() {
       });
   }, []);
 
-  return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell style={{ width: 16 }}>ID</TableCell>
-            <TableCell>Description</TableCell>
-            <TableCell style={{ width: 16 }}>Completed</TableCell>
-            <TableCell style={{ width: 16 }}></TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {todos.map((todo: Todo) => {
-            const onDeleteClicked = () => {
-              handleRemoveTodo(todo.id);
-            };
+  const handleOnClick = () => {
+    handleAddTodo("test");
+    handleGetTodoList()
+      .then((todoList) => {
+        setTodos(todoList.todos);
+      });
+  };
 
-            return (
-              <TableRow key={todo.id}>
-                <TableCell>{todo.id}</TableCell>
-                <TableCell>{todo.description}</TableCell>
-                <TableCell>
-                  <Checkbox checked={todo.completed} />
-                </TableCell>
-                <TableCell>
-                  <Button onClick={onDeleteClicked}><DeleteIcon /></Button>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+  return (
+    <>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell style={{ width: 16 }}>ID</TableCell>
+              <TableCell>Description</TableCell>
+              <TableCell style={{ width: 16 }}>Completed</TableCell>
+              <TableCell style={{ width: 16 }}></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {todos.map((todo: Todo) => {
+              const onDeleteClicked = () => {
+                handleRemoveTodo(todo.id);
+              };
+
+              return (
+                <TableRow key={todo.id}>
+                  <TableCell>{todo.id}</TableCell>
+                  <TableCell>{todo.description}</TableCell>
+                  <TableCell>
+                    <Checkbox checked={todo.completed} />
+                  </TableCell>
+                  <TableCell>
+                    <Button onClick={onDeleteClicked}><DeleteIcon /></Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Button onClick={handleOnClick}>+</Button>
+    </>
   );
 }
 
@@ -70,7 +82,6 @@ function App() {
     <main className="container">
       <h1>It works!</h1>
       <TodoListComponent />
-      <Button>+</Button>
     </main>
   );
 }

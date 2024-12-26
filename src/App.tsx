@@ -11,6 +11,7 @@ import Button from "@mui/material/Button";
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
 import Dialog from '@mui/material/Dialog';
 import TextField from '@mui/material/TextField';
 
@@ -47,14 +48,17 @@ function TodoInputDialog(props: TodoInputDialogProps) {
 
   return (
     <Dialog onClose={handleOnClose} open={open}>
-      <DialogTitle>Input todo</DialogTitle>
-      <TextField
-        id="outlined-basic"
-        label="Description"
-        variant="outlined"
-        defaultValue={value}
-        onKeyDown={onKeyDown}
-      />
+      <DialogTitle>Add new Todo</DialogTitle>
+      <DialogContent>
+        <TextField
+          id="outlined-basic"
+          label="Description"
+          variant="outlined"
+          style={{ margin: "0.5em" }}
+          defaultValue={value}
+          onKeyDown={onKeyDown}
+        />
+      </DialogContent>
     </Dialog>
   );
 }
@@ -151,7 +155,7 @@ function TodoListComponent() {
 function App() {
   return (
     <main className="container">
-      <h1>It works!</h1>
+      <h1>Todo App</h1>
       <TodoListComponent />
     </main>
   );

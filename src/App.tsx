@@ -34,7 +34,6 @@ function TodoListComponent() {
     handleAddTodo("test")
       .then((newTodo) => {
         let newTodos = [...todos, newTodo];
-        console.log(newTodo);
         setTodos(newTodos);
       });
   };

@@ -34,7 +34,6 @@ async fn handle_get_todolist(sqlite_pool: SqliteState<'_>) -> Result<TodoList, S
 
 #[tauri::command]
 async fn handle_add_todo(sqlite_pool: SqliteState<'_>, description: String) -> Result<Todo, String> {
-    println!("handle_add_todo ---------------");
     let todo = database::insert_todo(&sqlite_pool, description)
         .await
         .map_err(|e| e.to_string())?;

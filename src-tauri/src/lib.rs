@@ -60,11 +60,31 @@ async fn handle_remove_todo(sqlite_pool: SqliteState<'_>, id: i64) -> Result<(),
 pub fn run() -> Result<(), Box<dyn std::error::Error>> {
     use tauri::async_runtime::block_on;
 
-    let db_filepath = "./database.sqlite";
-    let db_url = format!("sqlite://{}", db_filepath);
+    let config_dir = directories::ProjectDirs::from("work", "eqseqs", "todoapp")
+        .map(|dirs| dirs.config_dir().to_path_buf())
+        .unwrap_or_else(|| panic!("Failed to get config directory"));
+    let db_filename = "database.sqlite";
+    let db_filepath = config_dir.join(db_filename);
+
+    // データベースのディレクトリがないなら作成
+    if !config_dir.exists() {
+        println!("Creating directory to {}", config_dir.display());
+        std::fs::create_dir_all(&config_dir)?;
+    }
+
+    // データベースファイルを開く前に有無を確認する
+    let db_exists = &db_filepath.exists();
+
+    // データベースファイルを開く
+    let db_url = format!(
+        "sqlite://{}",
+        db_filepath.clone().into_os_string().into_string().unwrap()
+    );
     let sqlite_pool = block_on(database::create_sqlite_pool(&db_url))?;
 
-    if std::fs::metadata(&db_filepath).is_ok() {
+    // データベースファイルが無かったならマイグレーションを実行
+    if !db_exists {
+        println!("Executing migrations ...");
         block_on(database::migrate_database(&sqlite_pool))?;
     }
 

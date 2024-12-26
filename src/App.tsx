@@ -9,6 +9,11 @@ import TableCell from "@mui/material/TableCell";
 import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
 import DeleteIcon from '@mui/icons-material/Delete';
+
+import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import TextField from '@mui/material/TextField';
+
 import "./App.css";
 
 import {
@@ -20,8 +25,42 @@ import {
   handleRemoveTodo,
 } from "./api";
 
+export interface TodoInputDialogProps {
+  open: boolean;
+  value: string;
+  onClose: (value: string) => void;
+}
+
+function TodoInputDialog(props: TodoInputDialogProps) {
+  const { open, value, onClose } = props;
+
+  const onKeyDown = (e: any) => {
+    if (e.key === "Enter") {
+      onClose(e.target.value);
+    }
+  };
+
+  const handleOnClose = () => {
+    onClose("");
+  };
+
+  return (
+    <Dialog onClose={handleOnClose} open={open}>
+      <DialogTitle>Input todo</DialogTitle>
+      <TextField
+        id="outlined-basic"
+        label="Description"
+        variant="outlined"
+        defaultValue={value}
+        onKeyDown={onKeyDown}
+      />
+    </Dialog>
+  );
+}
+
 function TodoListComponent() {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
   useEffect(() => {
     handleGetTodoList()
@@ -30,12 +69,20 @@ function TodoListComponent() {
       });
   }, []);
 
-  const handleOnClick = () => {
-    handleAddTodo("test")
-      .then((newTodo) => {
-        let newTodos = [...todos, newTodo];
-        setTodos(newTodos);
-      });
+  const handleDialogOpen = () => {
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = (value: string) => {
+    setDialogOpen(false);
+    if (value !== "") {
+      handleAddTodo(value)
+        .then((newTodo) => {
+          let newTodos = [...todos, newTodo];
+          setTodos(newTodos);
+          setDialogOpen(false);
+        });
+    }
   };
 
   return (
@@ -76,7 +123,12 @@ function TodoListComponent() {
           </TableBody>
         </Table>
       </TableContainer>
-      <Button onClick={handleOnClick}>+</Button>
+      <Button onClick={handleDialogOpen}>+</Button>
+      <TodoInputDialog
+        open={dialogOpen}
+        onClose={handleDialogClose}
+        value={""}
+      />
     </>
   );
 }

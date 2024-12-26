@@ -45,6 +45,16 @@ pub (crate) async fn insert_todo(pool: &SqlitePool, description: String) -> DbRe
     Ok(todo)
 }
 
+/// Todoを更新する
+pub (crate) async fn update_todo(pool: &SqlitePool, id: i64, completed: bool) -> DbResult<Todo> {
+    let todo: Todo = sqlx::query_as::<_, Todo>("UPDATE todos SET completed = ? WHERE id == ? RETURNING *")
+        .bind(completed)
+        .bind(id)
+        .fetch_one(pool)
+        .await?;
+    Ok(todo)
+}
+
 /// Todoを削除する
 pub (crate) async fn delete_todo(pool: &SqlitePool, id: i64) -> DbResult<()> {
     sqlx::query("DELETE FROM todos WHERE id == ?")

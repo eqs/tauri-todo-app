@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Paper from "@mui/material/Paper";
 import TableContainer from "@mui/material/TableContainer";
 import Table from "@mui/material/Table";
@@ -22,6 +22,7 @@ import {
 import {
   handleGetTodoList,
   handleAddTodo,
+  handleUpdateTodo,
   handleRemoveTodo,
 } from "./api";
 
@@ -107,12 +108,26 @@ function TodoListComponent() {
                   });
               };
 
+              const onCheckboxChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+                handleUpdateTodo(todo.id, e.target.checked)
+                  .then((updatedTodo: Todo) => {
+                    let newTodos =  todos.map((t: Todo) => {
+                      if (t.id == updatedTodo.id) {
+                          return { ...t, completed: updatedTodo.completed };
+                      } else {
+                          return t
+                      }
+                    });
+                    setTodos(newTodos);
+                  });
+              };
+
               return (
                 <TableRow key={todo.id}>
                   <TableCell>{todo.id}</TableCell>
                   <TableCell>{todo.description}</TableCell>
                   <TableCell>
-                    <Checkbox checked={todo.completed} />
+                    <Checkbox checked={todo.completed} onChange={onCheckboxChanged} />
                   </TableCell>
                   <TableCell>
                     <Button onClick={onDeleteClicked}><DeleteIcon /></Button>

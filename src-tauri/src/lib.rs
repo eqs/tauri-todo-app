@@ -41,6 +41,14 @@ async fn handle_add_todo(sqlite_pool: SqliteState<'_>, description: String) -> R
 }
 
 #[tauri::command]
+async fn handle_update_todo(sqlite_pool: SqliteState<'_>, id: i64, completed: bool) -> Result<Todo, String> {
+    let todo = database::update_todo(&sqlite_pool, id, completed)
+        .await
+        .map_err(|e| e.to_string())?;
+    Ok(todo)
+}
+
+#[tauri::command]
 async fn handle_remove_todo(sqlite_pool: SqliteState<'_>, id: i64) -> Result<(), String> {
     database::delete_todo(&sqlite_pool, id)
         .await
@@ -65,6 +73,7 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
         .invoke_handler(tauri::generate_handler![
             handle_get_todolist,
             handle_add_todo,
+            handle_update_todo,
             handle_remove_todo,
         ])
         // ハンドラからコネクションプールにアクセスできるようにする

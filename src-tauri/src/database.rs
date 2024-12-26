@@ -44,3 +44,12 @@ pub (crate) async fn insert_todo(pool: &SqlitePool, description: String) -> DbRe
         .await?;
     Ok(todo)
 }
+
+/// Todoを削除する
+pub (crate) async fn delete_todo(pool: &SqlitePool, id: i64) -> DbResult<()> {
+    sqlx::query("DELETE FROM todos WHERE id == ?")
+        .bind(id)
+        .execute(pool)
+        .await?;
+    Ok(())
+}

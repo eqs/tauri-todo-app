@@ -53,7 +53,11 @@ function TodoListComponent() {
           <TableBody>
             {todos.map((todo: Todo) => {
               const onDeleteClicked = () => {
-                handleRemoveTodo(todo.id);
+                handleRemoveTodo(todo.id)
+                  .then(() => {
+                    let newTodos =  todos.filter(t => t.id !== todo.id);
+                    setTodos(newTodos);
+                  });
               };
 
               return (

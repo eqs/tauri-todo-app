@@ -42,8 +42,9 @@ async fn handle_add_todo(sqlite_pool: SqliteState<'_>, description: String) -> R
 
 #[tauri::command]
 async fn handle_remove_todo(sqlite_pool: SqliteState<'_>, id: i64) -> Result<(), String> {
-    println!("handle_remove_todo ---------------");
-    dbg!(id);
+    database::delete_todo(&sqlite_pool, id)
+        .await
+        .map_err(|e| e.to_string())?;
     Ok(())
 }
 

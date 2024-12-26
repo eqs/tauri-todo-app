@@ -31,10 +31,11 @@ function TodoListComponent() {
   }, []);
 
   const handleOnClick = () => {
-    handleAddTodo("test");
-    handleGetTodoList()
-      .then((todoList) => {
-        setTodos(todoList.todos);
+    handleAddTodo("test")
+      .then((newTodo) => {
+        let newTodos = [...todos, newTodo];
+        console.log(newTodo);
+        setTodos(newTodos);
       });
   };
 

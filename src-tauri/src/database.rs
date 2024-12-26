@@ -36,11 +36,11 @@ pub (crate) async fn get_todos(pool: &SqlitePool) -> DbResult<Vec<Todo>> {
 }
 
 /// Todoを追加する
-pub (crate) async fn insert_todo(pool: &SqlitePool, description: String) -> DbResult<()> {
-    sqlx::query("INSERT INTO todos (description, completed) VALUES (?, ?)")
+pub (crate) async fn insert_todo(pool: &SqlitePool, description: String) -> DbResult<Todo> {
+    let todo: Todo = sqlx::query_as::<_, Todo>("INSERT INTO todos (description, completed) VALUES (?, ?) RETURNING *")
         .bind(description)
         .bind(false)
         .fetch_one(pool)
         .await?;
-    Ok(())
+    Ok(todo)
 }
